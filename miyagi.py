@@ -3,11 +3,9 @@ import inspect
 from pyfiglet import Figlet
 from importlib import import_module
 
-from vibora import Vibora
-from vibora.blueprints import Blueprint
-
 from .config import Config
 from .db import Db
+from .web import WebApp
 
 
 class App:
@@ -19,40 +17,13 @@ class App:
         self.db = Db(self.config)
 
         if not as_script:
-            self.webapp = Vibora()
-            self.webapp.components.add(self)
+            self.webapp = WebApp(self)
             blueprints = blueprints or []
-
-            self._make_gui()
-            self._make_json_api()
-
             for blueprint in blueprints:
-                self.webapp.add_blueprint(blueprint)
+                self.webapp.vibora.add_blueprint(blueprint)
 
     def run(self):
-        self.webapp.run(host=self.config.host, port=self.config.port, debug=self.config.debug)
-
-    def _make_json_api(self):
-        print('\nInitializing JsonApi routes:')
-        from .web.apis.jsonapi import JsonApi
-
-        self.json_api = Blueprint()
-        for route in JsonApi(self).craft():
-            self._add_route(self.json_api, route)
-        self.webapp.add_blueprint(self.json_api)
-
-    def _make_gui(self):
-        print('\nInitializing Web frontend:')
-        from .web.frontend import Gui
-
-        self.web = Blueprint()
-        for route in Gui(self).craft():
-            self._add_route(self.web, route)
-        self.webapp.add_blueprint(self.web)
-
-    def _add_route(self, blueprint, route):
-        print(f'Adding route: {self.webapp.url_scheme}://{self.config.host}:{self.config.port}{route.uri}')
-        blueprint.route(route.uri, methods=route.methods)(route.handler)
+        self.webapp.vibora.run(host=self.config.host, port=self.config.port, debug=self.config.debug)
 
     def _read_processes(self):
         print('\nLoading installed processes...')

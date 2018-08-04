@@ -1,4 +1,6 @@
-from ..miyagi import App
+from vibora import Vibora
+from vibora.blueprints import Blueprint
+from vibora.static import StaticHandler
 
 
 class MiyagiRoute:
@@ -9,5 +11,43 @@ class MiyagiRoute:
 
 
 class MiyagiBlueprint:
-    def __init__(self, app: App):
+    def __init__(self, app):
         self.app = app
+
+
+class WebApp:
+    def __init__(self, app):
+        self.app = app
+        print(self.app.config.statics)
+        self.vibora = Vibora(
+            static=StaticHandler(
+                paths=self.app.config.statics,
+                url_prefix='/static',
+                max_cache_size=1 * 1024 * 1024
+            )
+        )
+        self.vibora.components.add(app)
+        self._make_gui()
+        self._make_json_api()
+
+    def _make_json_api(self):
+        print('\nInitializing JsonApi routes:')
+        from .apis.jsonapi import JsonApi
+
+        self.json_api = Blueprint()
+        for route in JsonApi(self.app).craft():
+            self._add_route(self.json_api, route)
+        self.vibora.add_blueprint(self.json_api)
+
+    def _make_gui(self):
+        print('\nInitializing Web frontend:')
+        from .frontend import Gui
+
+        self.web = Blueprint()
+        for route in Gui(self).craft():
+            self._add_route(self.web, route)
+        self.vibora.add_blueprint(self.web)
+
+    def _add_route(self, blueprint, route):
+        print(f'Adding route: {self.vibora.url_scheme}://{self.app.config.host}:{self.app.config.port}{route.uri}')
+        blueprint.route(route.uri, methods=route.methods)(route.handler)
