@@ -25,3 +25,14 @@ async def home(config: Config):
     return JsonResponse({'foo': 'bar'})
 
 """
+
+
+class ConfigFile:
+    yml = """host: localhost
+port: 5000
+debug: true
+DB:
+  type: sqlite
+  name: foo.db
+
+"""
