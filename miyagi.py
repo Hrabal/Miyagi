@@ -7,7 +7,7 @@ from vibora import Vibora
 from vibora.blueprints import Blueprint
 
 from .config import Config
-from .db.db import Db
+from .db import Db
 
 
 class App:
