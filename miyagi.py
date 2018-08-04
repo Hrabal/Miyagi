@@ -7,7 +7,7 @@ from vibora import Vibora
 from vibora.blueprints import Blueprint
 
 from .config import Config
-from .db.db import Db, make_sqalchemy_model
+from .db.db import Db
 
 
 class App:
@@ -69,7 +69,7 @@ class MiyagiObject:
             if sub_obj != type:
                 sub_obj = MiyagiObject(sub_obj, parent=self)
                 self._objects[sub_obj.name] = sub_obj
-        self.cls = make_sqalchemy_model(obj, '_'.join(part.name.lower() for part in self.path))
+        self.cls = Db.craft_sqalchemy_model(obj, '_'.join(part.name.lower() for part in self.path))
 
     @property
     def objects(self):

@@ -18,9 +18,14 @@ class Db:
         self.query = self.db_session().query
         self.add = self.db_session().add
 
-
-def make_sqalchemy_model(obj, table: str):
-    return type(str(obj.__name__),
-                (Thing, SQLAlchemyBase),
-                {**{'__tablename__': table}, **{k: Column(Unicode())  # TODO: types
-                                                for k, typ in obj.__annotations__.items() if k != 'uid'}})
+    @classmethod
+    def craft_sqalchemy_model(cls, obj, table: str):
+        return type(
+            str(obj.__name__),
+            (Thing, SQLAlchemyBase),
+            {
+                **{'__tablename__': table},
+                # TODO Type mapping below
+                **{k: Column(Unicode()) for k, typ in obj.__annotations__.items() if k != 'uid'}
+            }
+        )
