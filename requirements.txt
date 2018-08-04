@@ -1,0 +1,7 @@
+vibora
+pyyaml
+SQLAlchemy==1.0.14
+sqlalchemy-migrate==0.10.0
+PyInquirer
+prompt_toolkit==1.0.14
+pyfiglet
