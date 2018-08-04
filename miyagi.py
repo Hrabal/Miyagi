@@ -15,7 +15,6 @@ class App:
         self.config = Config(config)
         print()
         print(Figlet(font='colossal').renderText('Miyagi'), f'App name: {self.config.project_name}')
-
         self._read_processes()
         self.db = Db(self.config)
 
