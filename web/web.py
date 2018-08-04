@@ -1,9 +1,6 @@
-from .miyagi import App
-
 
 class MiyagiRoute:
-    def __init__(self, app: App, uri: str, methods: list, fnc):
-        self.app = app
+    def __init__(self, uri: str, methods: list, fnc):
         self.uri = uri
         self.methods = methods
-        self.fnc = fnc
+        self.handler = fnc

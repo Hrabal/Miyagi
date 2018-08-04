@@ -37,13 +37,13 @@ class App:
         self.webapp.run(host=self.config.host, port=self.config.port, debug=self.config.debug)
 
     def _make_json_api(self):
-        from .jsonapi import JsonApiHandlers
+        from .web.apis.jsonapi import JsonApiHandlers
         print('\nInitializing JsonApi routes:')
         for proc_name, process in self.processes.items():
             for obj in process.objects:
                 if obj._json_api:
                     handler_factory = JsonApiHandlers(obj, self)
-                    for route in handler_factory.make():
+                    for route in handler_factory.craft():
                         print(f'{self.webapp.url_scheme}://{self.config.host}:{self.config.port}{route.uri}')
                         self.json_api.route(route.uri, methods=route.methods)(route.handler)
 
