@@ -3,7 +3,7 @@ from tempy.tags import Meta, Title, Nav, Div, A, Input, Ul, Li, Span, I, H6, H1,
 
 from ....miyagi import App
 
-from .resources import Bootstrap4, FontAwesome, JQuery, Dashboard
+from .resources import Bootstrap4, FontAwesome, JQuery, MainCSS
 
 
 class MiyagiBase(TempyPage):
@@ -23,7 +23,11 @@ class MiyagiBase(TempyPage):
             Meta(charset="utf-8"),
             Meta(name="viewport",
                  content="width=device-width, initial-scale=1, shrink-to-fit=no"),
-            Title()(self.app.config.project_name)
+            Title()(f'{self.app.config.project_name} - {self.page_title}')
+        )
+        self.content = Div(klass='d-flex justify-content-between flex-wrap '
+                           'flex-md-nowrap align-items-center pb-2 mb-3 border-bottom')(
+            H1(klass='h2')(self.page_title)
         )
         self.body(
             Nav(klass='navbar navbar-dark sticky-top bg-dark flex-md-nowrap p-0')(
@@ -58,10 +62,7 @@ class MiyagiBase(TempyPage):
                         )
                     ),
                     Main(role='main', klass='col-md-9 ml-sm-auto col-lg-10 pt-3 px-4')(
-                        Div(klass='d-flex justify-content-between flex-wrap flex-md-nowrap '
-                                  'align-items-center pb-2 mb-3 border-bottom')(
-                            H1(klass='h2')('Home')
-                        )
+                        self.content
                     )
                 )
             ),

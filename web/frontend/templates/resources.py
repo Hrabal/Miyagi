@@ -25,5 +25,6 @@ class FontAwesome:
                 crossorigin="anonymous")
 
 
-class Dashboard:
-    css = Link(rel="stylesheet", href="/static/base/css/dashboard.css")
+class MainCSS:
+    main_css = Link(rel="stylesheet", href="/static/base/css/dashboard.css")
+    navbar_css = Link(rel="stylesheet", href="/static/base/css/navbar.css")
