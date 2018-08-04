@@ -7,15 +7,16 @@ from .resources import Bootstrap4, FontAwesome, JQuery, MainCSS
 
 
 class MiyagiBase(TempyPage):
-    def __init__(self, app: App):
+    def __init__(self, app: App, title: str=''):
         self.app = app
+        self.page_title = title
         super().__init__()
 
     def js(self):
         return [JQuery.js, Bootstrap4.js, ]
 
     def css(self):
-        return [Bootstrap4.css, FontAwesome.css, Dashboard.css]
+        return [Bootstrap4.css, FontAwesome.css, MainCSS.css]
 
     def init(self):
         self.head(self.css())
