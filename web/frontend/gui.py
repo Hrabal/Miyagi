@@ -14,7 +14,7 @@ class Gui:
 
     def home(self):
         async def home_handler(app: App):
-            output = MiyagiBase({'app': app}).render()
+            output = MiyagiBase(app).render()
             return Response(output.encode())
 
         yield MiyagiRoute(f'/app', ['GET', ], home_handler)
