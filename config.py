@@ -3,6 +3,8 @@ import yaml
 
 
 class Config:
+    statics = [os.path.join(os.getcwd(), 'Miyagi', 'web', 'static'), ]
+
     def __init__(self, file: str=None, obj: dict=None):
         if file:
             with open(file) as f:
@@ -12,7 +14,10 @@ class Config:
                 kls = type(k, (Config, ), v)
                 setattr(self, k, kls(obj=v))
             else:
-                setattr(self, k, v)
+                if k == 'statics':
+                    self.statics.extend(v)
+                else:
+                    setattr(self, k, v)
         self.project_name = os.getcwd().split('/')[-1]
 
     def __repr__(self):
