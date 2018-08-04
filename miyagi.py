@@ -11,7 +11,7 @@ from .db.db import Db
 
 
 class App:
-    def __init__(self, config: str=None, blueprints: list=None, script: bool=False):
+    def __init__(self, config: str=None, blueprints: list=None, as_script: bool=False):
         self.config = Config(config)
         print()
         print(Figlet(font='colossal').renderText('Miyagi'), f'App name: {self.config.project_name}')
@@ -19,7 +19,7 @@ class App:
         self._read_processes()
         self.db = Db(self.config)
 
-        if not script:
+        if not as_script:
             self.webapp = Vibora()
             self.webapp.components.add(self)
             self.web = Blueprint()
