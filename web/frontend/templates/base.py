@@ -3,7 +3,7 @@ from tempy.tags import Meta, Title, Nav, Div, A, Input, Ul, Li, Span, I, H6, H1,
 
 from ....miyagi import App
 
-from .resources import Bootstrap4, FontAwesome, JQuery, MainCSS
+from .resources import Bootstrap4, FontAwesome, JQuery, MainCSS, Popper
 
 
 class MiyagiBase(TempyPage):
@@ -13,7 +13,7 @@ class MiyagiBase(TempyPage):
         super().__init__()
 
     def js(self):
-        return [JQuery.js, Bootstrap4.js, ]
+        return [JQuery.js, Popper.js, Bootstrap4.js, ]
 
     def css(self):
         return [Bootstrap4.css, FontAwesome.css, MainCSS.css]
@@ -49,10 +49,33 @@ class MiyagiBase(TempyPage):
                         Div(klass='sidebar-sticky')(
                             Ul(klass='nav flex-column')(
                                 Li(klass='nav-item')(
-                                    A(klass='nav-link active', href='Dashboard')(
+                                    A(klass='nav-link active', href='/app')(
                                         I(klass='fas fa-home'),
                                         ' Dashboard',
                                         Span(klass='sr-only')('(current)')
+                                    )
+                                ),
+                                Li(klass='nav-item sidebar-heading d-flex justify-content-between '
+                                         'align-items-center px-3 mt-4 mb-1 text-muted')(
+                                    A(klass='nav-link', href='/app/processes')(
+                                        I(klass="fas fa-chalkboard-teacher"),
+                                        ' Processes ',
+                                    ),
+                                    A(klass='navbar-toggler collapsed',
+                                      **{
+                                            "data-toggle": "collapse",
+                                            "data-target": "#processesList",
+                                            "aria-expanded": "false"})(
+                                        I(klass="fas fa-plus-circle navbar-toggler-icon")
+                                    )
+                                ),
+                                Div(klass="collapse", id="processesList")(
+                                    Ul(klass="nav flex-column")(
+                                        Li(klass='nav-item')(
+                                            A(href=f'/app/{process.name.lower()}', klass='nav-link')(
+                                                I(klass=f'fas {process.icon}'), ' ' + process.name.title()
+                                            )
+                                        ) for process in self.app.processes.values()
                                     )
                                 )
                             ),

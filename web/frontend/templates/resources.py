@@ -26,5 +26,8 @@ class FontAwesome:
 
 
 class MainCSS:
-    main_css = Link(rel="stylesheet", href="/static/base/css/dashboard.css")
-    navbar_css = Link(rel="stylesheet", href="/static/base/css/navbar.css")
+    css = Link(rel="stylesheet", href="/static/base/css/dashboard.css")
+
+
+class Popper:
+    js = Script(src='https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.3/umd/popper.min.js')

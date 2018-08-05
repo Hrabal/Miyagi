@@ -74,6 +74,7 @@ class MiyagiProcess:
     def __init__(self, name, module):
         self.name = name
         self.module = module
+        self.icon = getattr(module, 'icon', 'fa-code-branch')
         self._objects = []
         for name, obj in inspect.getmembers(self.module, inspect.isclass):
             if getattr(obj, '__module__', None) == f'{self.module.__name__}.objects':
