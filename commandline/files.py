@@ -1,3 +1,8 @@
+# -*- coding: utf-8 -*-
+"""
+Container Classes used to store the files skeletons we're gonna create in project init.
+"""
+
 
 class AppFiles:
     run = """

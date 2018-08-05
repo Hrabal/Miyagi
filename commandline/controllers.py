@@ -1,5 +1,10 @@
+# -*- coding: utf-8 -*-
+"""
+Collection of all the command line controllers we're gonna provide to the command line utility of Miyagi.
+"""
 import os
 from PyInquirer import prompt, Separator
+
 from migrate.versioning import api
 from migrate.exceptions import DatabaseAlreadyControlledError
 
@@ -11,11 +16,17 @@ from .files import AppFiles
 
 
 class CommanlineController:
+    """Base class for commandline parsers"""
+
     def __init__(self, app: App):
         self.app = app
 
 
 class InitController(CommanlineController):
+    """Controller for the installation-specific tasks:
+    - project initialization
+    - project configuration
+    """
     _callable = True
     _command = 'init'
 
@@ -44,6 +55,12 @@ class InitController(CommanlineController):
                             'name': 'Virtual Envelope',
                         },
                         {
+                            'name': 'Config File',
+                        },
+                        {
+                            'name': 'Admin User',
+                        },
+                        {
                             'name': 'Custom routes'
                         },
                         {
@@ -63,6 +80,10 @@ class InitController(CommanlineController):
 
 
 class DbController(CommanlineController):
+    """Controller for the installation-specific tasks:
+    - init the db
+    - upgrade, migrate, downgrade the db
+    """
     _callable = True
     _command = 'db'
 

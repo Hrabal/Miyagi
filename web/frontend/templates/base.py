@@ -39,7 +39,7 @@ class MiyagiBase(TempyPage):
                       **{'aria-label': 'Search'}),
                 Ul(klass='navbar-nav px-3')(
                     Li(klass='nav-item text-nowrap')(
-                        A(klass='nav-link')('Sign Out')
+                        A(klass='nav-link', href='/signout')('Sign out')
                     )
                 )
             ),
