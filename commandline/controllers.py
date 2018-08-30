@@ -27,8 +27,8 @@ class InitController(CommanlineController):
     - project initialization
     - project configuration
     """
-    _callable = True
-    _command = 'init'
+    callable_cls = True
+    command = 'init'
 
     def project(self):
         yes = prompt([
@@ -84,8 +84,8 @@ class DbController(CommanlineController):
     - init the db
     - upgrade, migrate, downgrade the db
     """
-    _callable = True
-    _command = 'db'
+    callable_cls = True
+    command = 'db'
 
     def create(self):
         yes = prompt([

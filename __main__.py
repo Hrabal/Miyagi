@@ -16,9 +16,9 @@ subparsers = parser.add_subparsers()
 # For every controller class defined in the commandline.controllers module we add a subparser
 for _, cls in inspect.getmembers(controllers, inspect.isclass):
     # Only classes with _callable will be added as subparser (so to exclude utility classes)
-    if getattr(cls, '_callable', False):
+    if getattr(cls, 'callable_cls', False):
         # Bind the subparser to the _command defined in the class
-        cls_parser = subparsers.add_parser(cls._command)
+        cls_parser = subparsers.add_parser(cls.command)
         # Instantiate the controller class
         controller = cls(APP)
         # Every method in the controller class will have it's own subparser

@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import os
 import inspect
 from itertools import chain
 from pyfiglet import Figlet
@@ -61,10 +60,10 @@ class App:
         self.processes = {}
         for module in chain(import_miyagi_modules(internal=True),
                             import_miyagi_modules('./processes')):
-                # Add the process as a Miyagi.MiyagiProcess instance to the app's processes
-                p_name = module.__name__.split('.')[-1]
-                process = MiyagiProcess(p_name, module)
-                self.processes[p_name] = process
+            # Add the process as a Miyagi.MiyagiProcess instance to the app's processes
+            p_name = module.__name__.split('.')[-1]
+            process = MiyagiProcess(p_name, module)
+            self.processes[p_name] = process
         print(f'Loaded Processes: {", ".join(map(str, self.processes.values()))}')
         print(f'Loaded Objects: {", ".join(map(str,  (o for p in self.processes.values() for o in p.objects)))}')
 
@@ -82,7 +81,7 @@ class MiyagiObject:
 
         # inspect the class to find nested objects
         self._objects = {}
-        for name, sub_obj in inspect.getmembers(obj, inspect.isclass):
+        for _, sub_obj in inspect.getmembers(obj, inspect.isclass):
             if sub_obj != type:
                 sub_obj = MiyagiObject(sub_obj, parent=self)
                 self._objects[sub_obj.name] = sub_obj
@@ -133,7 +132,7 @@ class MiyagiProcess:
         """Reads a module in search for valid Miyagi objects to add."""
         self._objects = []
         # For every class in this module..
-        for name, obj in inspect.getmembers(self.module, inspect.isclass):
+        for _, obj in inspect.getmembers(self.module, inspect.isclass):
             # ..if it's a class defined in the process and not imported from elsewhere..
             # TODO: better validation
             if getattr(obj, '__module__', None) == f'{self.module.__name__}.objects':
