@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from sqlalchemy.orm.session import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Unicode, create_engine
