@@ -8,7 +8,7 @@ from .miyagi import App
 
 # Instantiate an App object so every commandline controller have access to the
 # installation-specific configs, dbs, etc.
-APP = App(config='config.yml')
+APP = App(config='config.yml', for_web=False)
 
 parser = argparse.ArgumentParser()
 subparsers = parser.add_subparsers()

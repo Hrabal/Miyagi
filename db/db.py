@@ -19,6 +19,10 @@ class Db:
         self.query = self.db_session().query
         self.add = self.db_session().add
 
+    @property
+    def metadata(self):
+        return self.SQLAlchemyBase.metadata
+
     @classmethod
     def craft_sqalchemy_model(cls, obj, table: str):
         return type(
