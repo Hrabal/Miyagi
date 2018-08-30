@@ -3,11 +3,17 @@ import inspect
 from itertools import chain
 from pyfiglet import Figlet
 
+from vibora.blueprints import Blueprint
+
 # Miyagi imports
 from .config import Config
 from .db import Db
 from .web import WebApp
 from .tools import import_miyagi_modules
+
+
+# Exceptions import
+from .exceptions import MiyagiTypeError
 
 
 class App:
@@ -27,7 +33,7 @@ class App:
     - add custom project Vibora blueprints
     """
 
-    def __init__(self, config: str=None, blueprints: list=None, for_web: bool=False):
+    def __init__(self, config: str=None, custom_pages: list=None, for_web: bool=True):
         # Create the config object from the provided config file
         self.config = Config(config)
 
@@ -45,10 +51,16 @@ class App:
             self.webapp = WebApp(self)
 
             # Add extra Vibora blueprints
-            # TODO: exception handling, and check that every blueprint is a valid vIbora Blueprint instance
-            blueprints = blueprints or []
+            # TODO: exception handling, and check that every blueprint is a valid Vibora Blueprint instance
+            blueprints = custom_pages or []
             for blueprint in blueprints:
+                if not isinstance(blueprint, Blueprint):
+                    raise MiyagiTypeError(obj=blueprint, expected=Blueprint, par='custom_pages')
+
+                print('\nAdding custom installation routes:')
                 self.webapp.vibora.add_blueprint(blueprint)
+                for route in blueprint.routes:
+                    print(route)
 
     def run(self):
         """Wrapper around Vibora's run method"""
