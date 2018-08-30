@@ -18,7 +18,7 @@ class MiyagiBlueprint:
 class WebApp:
     def __init__(self, app):
         self.app = app
-        print(self.app.config.statics)
+        print('\nInitializing Vibora webapp.')
         self.vibora = Vibora(
             static=StaticHandler(
                 paths=self.app.config.statics,
@@ -26,7 +26,9 @@ class WebApp:
                 max_cache_size=1 * 1024 * 1024
             )
         )
-        self.vibora.components.add(app)
+        self.vibora.components.add(self.app)
+        self.vibora.components.add(self.app.config)
+        print(f'Added static folders: {self.app.config.statics}')
         self._make_gui()
         self._make_json_api()
 
