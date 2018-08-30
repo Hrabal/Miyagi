@@ -1,13 +1,14 @@
 # -*- coding: utf-8 -*-
 import os
 import inspect
+from itertools import chain
 from pyfiglet import Figlet
-from importlib import import_module
 
 # Miyagi imports
 from .config import Config
 from .db import Db
 from .web import WebApp
+from .tools import import_miyagi_modules
 
 
 class App:
@@ -55,15 +56,14 @@ class App:
         self.webapp.vibora.run(host=self.config.host, port=self.config.port, debug=self.config.debug)
 
     def _read_processes(self):
-        """Traverses the "processes" folder and adds all the found valid processes to the Miyagi app
-        TODO: processes validation"""
+        """Traverses the "processes" folder and adds all the found valid processes to the Miyagi app"""
         print('\nLoading installed processes...')
         self.processes = {}
-        for p_name in os.listdir('./processes'):
-            # For each valid folder..
-            if os.path.isdir(os.path.join('.', 'processes', p_name)) and not p_name.startswith('__'):
+        for module in chain(import_miyagi_modules(internal=True),
+                            import_miyagi_modules('./processes')):
                 # Add the process as a Miyagi.MiyagiProcess instance to the app's processes
-                process = MiyagiProcess(p_name, import_module(f'processes.{p_name}', '..processes'))
+                p_name = module.__name__.split('.')[-1]
+                process = MiyagiProcess(p_name, module)
                 self.processes[p_name] = process
         print(f'Loaded Processes: {", ".join(map(str, self.processes.values()))}')
         print(f'Loaded Objects: {", ".join(map(str,  (o for p in self.processes.values() for o in p.objects)))}')
