@@ -9,6 +9,7 @@ from vibora.blueprints import Blueprint
 from .config import Config
 from .db import Db
 from .web import WebApp
+from .tools import objdict
 from .tools import import_miyagi_modules
 
 
@@ -33,7 +34,7 @@ class App:
     - add custom project Vibora blueprints
     """
 
-    def __init__(self, config: str=None, custom_pages: list=None, for_web: bool=True):
+    def __init__(self, config: str=None, custom_pages: list=None, for_web: bool=False):
         # Create the config object from the provided config file
         self.config = Config(config)
 
@@ -46,21 +47,26 @@ class App:
         # Init the db
         self.db = Db(self.config)
 
+        # Registering extra/custom components
+        self.custom_pages = custom_pages
         if for_web:
-            # init the webapp
-            self.webapp = WebApp(self)
+            self.init_webapp()
 
-            # Add extra Vibora blueprints
-            # TODO: exception handling, and check that every blueprint is a valid Vibora Blueprint instance
-            blueprints = custom_pages or []
-            for blueprint in blueprints:
-                if not isinstance(blueprint, Blueprint):
-                    raise MiyagiTypeError(obj=blueprint, expected=Blueprint, par='custom_pages')
+    def init_webapp(self, custom_pages: list=None):
+        # init the webapp
+        self.webapp = WebApp(self)
 
-                print('\nAdding custom installation routes:')
-                self.webapp.vibora.add_blueprint(blueprint)
-                for route in blueprint.routes:
-                    print(route)
+        # Add extra Vibora blueprints
+        # TODO: exception handling, and check that every blueprint is a valid Vibora Blueprint instance
+        blueprints = self.custom_pages or []
+        for blueprint in blueprints:
+            if not isinstance(blueprint, Blueprint):
+                raise MiyagiTypeError(obj=blueprint, expected=Blueprint, par='custom_pages')
+
+            print('\nAdding custom installation routes:')
+            self.webapp.vibora.add_blueprint(blueprint)
+            for route in blueprint.routes:
+                print(route)
 
     def run(self):
         """Wrapper around Vibora's run method"""
@@ -69,7 +75,7 @@ class App:
     def _read_processes(self):
         """Traverses the "processes" folder and adds all the found valid processes to the Miyagi app"""
         print('\nLoading installed processes...')
-        self.processes = {}
+        self.processes = objdict()
         for module in chain(import_miyagi_modules(internal=True),
                             import_miyagi_modules('./processes')):
             # Add the process as a Miyagi.MiyagiProcess instance to the app's processes

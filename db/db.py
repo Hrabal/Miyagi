@@ -4,20 +4,24 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Unicode, create_engine
 
 from ..config import Config
-from ..objects import Thing
+from ..objects import MiyagiObject
+from ..tools import objdict
 
 SQLAlchemyBase = declarative_base()
 
 
 class Db:
+    models = objdict()
+
     def __init__(self, config: Config):
         self.config = config
         self.SQLAlchemyBase = SQLAlchemyBase
-        self.db_engine = create_engine(self.config.db_uri)
-        self.db_session = sessionmaker(autoflush=False)
-        self.db_session.configure(bind=self.db_engine)
-        self.query = self.db_session().query
-        self.add = self.db_session().add
+        self.db_engine = create_engine(self.config.db_uri, echo=True)
+        self.session_maker = sessionmaker(autoflush=False)
+        self.session_maker.configure(bind=self.db_engine)
+
+    def session(self):
+        return self.session_maker()
 
     @property
     def metadata(self):
@@ -25,12 +29,15 @@ class Db:
 
     @classmethod
     def craft_sqalchemy_model(cls, obj, table: str):
-        return type(
-            str(obj.__name__),
-            (Thing, SQLAlchemyBase),
+        name = str(obj.__name__)
+        model = type(
+            name,
+            (MiyagiObject, SQLAlchemyBase),
             {
                 **{'__tablename__': table},
                 # TODO Type mapping below
                 **{k: Column(Unicode()) for k, typ in obj.__annotations__.items() if k != 'uid'}
             }
         )
+        cls.models[name] = model
+        return model

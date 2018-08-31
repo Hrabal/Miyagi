@@ -23,3 +23,21 @@ def import_miyagi_modules(base_dir: str=None, internal: bool=False):
             # TODO: subfolder structure validation here
             # We import and yield the module
             yield import_module(f'{pkg}.{p_name}', **pk_arg)
+
+
+class objdict(dict):
+    """dict with attribute access"""
+    def __getattr__(self, name):
+        if name in self:
+            return self[name]
+        else:
+            raise AttributeError("No such attribute: " + name)
+
+    def __setattr__(self, name, value):
+        self[name] = value
+
+    def __delattr__(self, name):
+        if name in self:
+            del self[name]
+        else:
+            raise AttributeError("No such attribute: " + name)

@@ -1,14 +1,10 @@
 # -*- coding: utf-8 -*-
-from sqlalchemy import Column, Integer
+from .db.objects import BaseDbObject
 
 
-class Thing:
-    uid = Column(Integer, primary_key=True, autoincrement=False)
-
-    def items(self):
-        for col in self.__class__.__table__.columns:
-            if col.key != 'uid':
-                yield col.key, self.__dict__.get(col.key, None)
+class MiyagiObject(BaseDbObject):
+    def __repr__(self):
+        return f'<{self.__class__.__name__} uid: {self.uid}>'
 
 
 class TypedMany:
