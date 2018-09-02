@@ -2,6 +2,11 @@ import os
 import yaml
 
 
+class DbTypes:
+    SQLLITE = 'Sqllite'
+    AWS = 'AWS'
+
+
 class Config:
     statics = [os.path.join(os.getcwd(), 'Miyagi', 'web', 'static'), ]
 
@@ -28,7 +33,13 @@ class Config:
 
     @property
     def db_uri(self):
-        return f'sqlite:///{self.project_name.lower()}.db'
+        try:
+            return {
+                DbTypes.AWS: f'{self.DB.engine}://{self.DB.user}:{self.DB.pwd}@{self.DB.uri}/{self.DB.dbname}',
+                DbTypes.SQLLITE: f'{self.DB.type}:///{self.project_name.lower()}.db'
+            }.get(self.DB.type)
+        except KeyError:
+            raise Exception('No db configuration found')
 
     @property
     def db_repo(self):
