@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from vibora.responses import JsonResponse
 
 from ...objects import TypedMany

@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from tempy.widgets import TempyPage
 from tempy.tags import Meta, Title, Nav, Div, A, Input, Ul, Li, Span, I, H6, H1, Main
 

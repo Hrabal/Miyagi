@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from tempy.tags import Link, Script
 
 

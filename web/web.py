@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from vibora import Vibora
 from vibora.blueprints import Blueprint
 from vibora.static import StaticHandler
