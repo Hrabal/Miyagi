@@ -38,13 +38,13 @@ class WebApp:
         from .apis.jsonapi import JsonApi
 
         self.json_api = Blueprint()
-        for route in JsonApi(self.app).craft():
+        for route in JsonApi(self.app).endpoints:
             self._add_route(self.json_api, route)
         self.vibora.add_blueprint(self.json_api)
 
     def _make_gui(self):
         print('\nInitializing Web frontend:')
-        from .frontend import Gui
+        from .gui import Gui
 
         self.web = Blueprint()
         for route in Gui(self.app).pages:

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-from tempy.tags import Div, Table, Thead, Th, Input, Tbody, Tr, Td, I, A
+from tempy.tags import *
 
 from .base import MiyagiBase
 
@@ -56,5 +56,16 @@ class ProcessPage(MiyagiBase):
 
     def init(self):
         self.content(
-            
+            Table(klass='table table-striped')(
+                Tr()(
+                    Td(colspan=3)(
+                        H6(klass='border-bottom border-gray pb-2 mb-0')('Process Objects')
+                    )
+                ),
+                [Tr()(
+                    Td()(I(klass='far fa-th-list')),
+                    Td()(I(klass='fas fa-plus-square')),
+                    Td()(P()(obj.name.title()))
+                ) for obj in self.process.objects]
+            )
         )

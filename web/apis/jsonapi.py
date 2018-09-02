@@ -9,8 +9,9 @@ from ...miyagi import App
 class JsonApi(MiyagiBlueprint):
     base_path = '/jsonapi'
 
-    def craft(self):
-        for proc_name, process in self.app.processes.items():
+    @property
+    def endpoints(self):
+        for _, process in self.app.processes.items():
             for obj in process.objects:
                 if obj._json_api:
                     for handler_factory in (self.base_collection, ):

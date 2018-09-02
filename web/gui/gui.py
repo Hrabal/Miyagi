@@ -12,13 +12,13 @@ class Gui:
 
     @property
     def pages(self):
-        yield self.page(MiyagiAppHome(self.app), '/app')
-        yield self.page(ProcessesPage(self.app), '/app/processes')
+        yield self.page(MiyagiAppHome, '/app')
+        yield self.page(ProcessesPage, '/app/processes')
         for p_name, process in self.app.processes.items():
-            yield self.page(ProcessPage(self.app, process=process), f'/app/processes/{p_name}')
+            yield self.page(ProcessPage, f'/app/processes/{p_name}', process=process)
 
-    def page(self, template, uri):
+    def page(self, template, uri, **kwargs):
         async def generic_handler():
-            return Response(template.render().encode())
+            return Response(template(self.app, **kwargs).render().encode())
 
         return MiyagiRoute(uri, ['GET', ], generic_handler)

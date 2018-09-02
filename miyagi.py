@@ -155,7 +155,7 @@ class MiyagiProcess:
             # ..if it's a class defined in the process and not imported from elsewhere..
             # TODO: better validation
             if getattr(obj, '__module__', None) == f'{self.module.__name__}.objects':
-                # ..f it's not type..
+                # ..if it's not type..
                 if obj != type:
                     self._digest_object(obj)  # ..make a MiyagiObject instance.
 
