@@ -9,6 +9,10 @@ class DbTypes:
 
 class Config:
     statics = [os.path.join(os.getcwd(), 'Miyagi', 'web', 'static'), ]
+    JSON_API_PX = '/jsnapi'
+    GUI_PX = '/app'
+    PROCESSES_PX = '/processes'
+    OBJECTS_PX = '/objects'
 
     def __init__(self, file: str=None, obj: dict=None):
         if file:

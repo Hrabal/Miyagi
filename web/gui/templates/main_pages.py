@@ -46,13 +46,17 @@ class ProcessesPage(MiyagiBase):
 
 
 class ProcessPage(MiyagiBase):
+    def __init__(self, *args, **kwargs):
+        self.process = kwargs.pop('process')
+        super().__init__(*args, **kwargs)
+
     @property
     def page_title(self):
         return self.process.name.title()
 
-    def __init__(self, *args, **kwargs):
-        self.process = kwargs.pop('process')
-        super().__init__(*args, **kwargs)
+    @property
+    def process_uri(self):
+        return f'{self.app.config.GUI_PX}{self.app.config.PROCESSES_PX}/{self.process.name}'
 
     def init(self):
         self.content(
