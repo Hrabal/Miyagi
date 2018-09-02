@@ -6,3 +6,4 @@ PyInquirer
 prompt_toolkit==1.0.14
 pyfiglet
 tem-py
+psycopg2
