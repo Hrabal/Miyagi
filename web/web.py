@@ -47,7 +47,7 @@ class WebApp:
         from .frontend import Gui
 
         self.web = Blueprint()
-        for route in Gui(self).craft():
+        for route in Gui(self.app).pages:
             self._add_route(self.web, route)
         self.vibora.add_blueprint(self.web)
 

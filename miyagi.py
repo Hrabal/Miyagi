@@ -142,6 +142,7 @@ class MiyagiProcess:
         self.name = name
         self.module = module
         self.icon = getattr(module, 'icon', 'fa-code-branch')  # Default icon
+        self.is_admin = module.__package__.startswith('Miyagi')
 
         # Read all the object classes from this module
         self._read_objects()
