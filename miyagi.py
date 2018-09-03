@@ -133,6 +133,11 @@ class MiyagiObject:
         return f'<{self.__class__.__name__}.{self.name}>'
 
 
+class MiyagiAction:
+    """Class that wraps actions classes"""
+    pass
+
+
 class MiyagiProcess:
     """Class that wraps a process module.
     Reads the module folder and extracts all the useful infos for later use.
@@ -145,24 +150,29 @@ class MiyagiProcess:
         self.is_admin = module.__package__.startswith('Miyagi')
 
         # Read all the object classes from this module
-        self._read_objects()
+        for module, cls in [
+            ('objects', MiyagiObject),
+            ]:
+            self._read_element(module, cls)
 
-    def _read_objects(self):
-        """Reads a module in search for valid Miyagi objects to add."""
-        self._objects = []
+    def _get_module_element(self, typ):
         # For every class in this module..
         for _, obj in inspect.getmembers(self.module, inspect.isclass):
             # ..if it's a class defined in the process and not imported from elsewhere..
-            # TODO: better validation
-            if getattr(obj, '__module__', None) == f'{self.module.__name__}.objects':
+            if getattr(obj, '__module__', None) == f'{self.module.__name__}.{typ}':
                 # ..if it's not type..
                 if obj != type:
-                    self._digest_object(obj)  # ..make a MiyagiObject instance.
+                    yield obj
 
-    def _digest_object(self, obj):
-        """Make a MiyagiObject instance from a class and add it to this process's objects."""
-        obj = MiyagiObject(obj)
-        self._objects.append(obj)
+    def _read_element(self, module, cls):
+        """Reads a module in search for valid Miyagi objects to add."""
+        elements = []
+        # For every class in this module..
+        for obj in self._get_module_element(module):
+            # TODO: better validation
+            obj = cls(obj)  # ..make a MiyagiXXX instance.
+            elements.append(obj)
+        setattr(self, f'_{module}', elements)
 
     @property
     def objects(self):
