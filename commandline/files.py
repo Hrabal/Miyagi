@@ -30,14 +30,8 @@ async def home(config: Config):
     return JsonResponse({'foo': 'bar'})
 
 """
+    emptyInit = '# -*- coding: utf-8 -*-'
 
 
-class ConfigFile:
-    yml = """host: localhost
-port: 5000
-debug: true
-DB:
-  type: sqlite
-  name: foo.db
-
-"""
+class ExampleProcessFiles:
+    pass

@@ -4,14 +4,18 @@ Collection of all the command line controllers we're gonna provide to the comman
 """
 import os
 import traceback
+from ruamel import yaml
 from PyInquirer import prompt, Separator
 
 from migrate.versioning import api
 from migrate.exceptions import DatabaseAlreadyControlledError
 
 from ..miyagi import App
+from ..config import DbTypes, DBEngines
 
 from .colors import CEND, CRED
+from .constants import ProjectInitOptions
+from .validators import NumberValidator
 
 from .files import AppFiles
 
@@ -29,9 +33,9 @@ class InitController(CommanlineController):
     - project configuration
     """
     callable_cls = True
-    command = 'init'
+    command = 'project'
 
-    def project(self):
+    def init(self):
         yes = prompt([
             {
                 'type': 'confirm',
@@ -49,33 +53,126 @@ class InitController(CommanlineController):
                     'choices': [
                         Separator('= APP ='),
                         {
-                            'name': 'Base Project',
+                            'name': ProjectInitOptions.BASE_PROJECT,
                             'checked': True
                         },
                         {
-                            'name': 'Virtual Envelope',
+                            'name': ProjectInitOptions.VIRTUAL_ENVELOPE,
                         },
                         {
-                            'name': 'Config File',
+                            'name': ProjectInitOptions.CONFIG_FILE,
                         },
                         {
-                            'name': 'Admin User',
+                            'name': ProjectInitOptions.ADMIN_USER,
                         },
                         {
-                            'name': 'Custom routes'
+                            'name': ProjectInitOptions.CUSTOM_ROUTES,
                         },
                         {
-                            'name': 'Example process'
+                            'name': ProjectInitOptions.EXAMPLE_PROCESS,
                         },
                         Separator('= DB ='),
                         {
-                            'name': 'Db creation'
+                            'name': ProjectInitOptions.DB_CREATION,
                         },
                     ]
                 }
             ])
-            if 'Base Project' in responses['todo']:
-                custom_extra = AppFiles.custom if 'Custom routes' in responses['todo'] else ('', '')
+            if ProjectInitOptions.BASE_PROJECT in responses['todo']:
+                # Create base process folder
+                if not os.path.exists('./processes'):
+                    print('Creating the processes folder..')
+                    os.mkdir('processes')
+                if not os.path.exists(os.path.join('processes', '__init__.py')):
+                    with open(os.path.join('processes', '__init__.py'), 'w') as f:
+                        f.write(AppFiles.emptyInit)
+                if ProjectInitOptions.EXAMPLE_PROCESS in responses['todo']:
+                    if not os.path.exists(os.path.join('processes', 'example_process')):
+                        print('Creating example process')
+
+            if ProjectInitOptions.CONFIG_FILE in responses['todo']:
+                config_responses = prompt([
+                    {
+                        'type': 'input',
+                        'name': 'host',
+                        'message': 'Please enter the webapp host:',
+                        'default': 'localhost'
+                    },
+                    {
+                        'type': 'input',
+                        'name': 'port',
+                        'message': 'Please enter the webapp port:',
+                        'default': "5000",
+                        'validate': NumberValidator
+                    },
+                    {
+                        'type': 'confirm',
+                        'name': 'debug',
+                        'message': 'Activate debug mode?',
+                        'default': True,
+                    },
+                    {
+                        'type': 'confirm',
+                        'name': 'DB',
+                        'message': 'Add DB config?',
+                        'default': True,
+                    },
+                ])
+                if config_responses['DB']:
+                    config_responses['DB'] = prompt([
+                        {
+                            'type': 'rawlist',
+                            'name': 'type',
+                            'message': 'Select the database type',
+                            'default': DbTypes.SQLLITE,
+                            'choices': DbTypes.values()
+
+                        }]
+                    )
+                    db_questions = {
+                        DbTypes.AWS.value: [{
+                            'type': 'rawlist',
+                            'name': 'type',
+                            'message': 'Select the database engine:',
+                            'choices': DBEngines.values()
+
+                        }, {
+                            'type': 'input',
+                            'name': 'user',
+                            'default': 'root',
+                            'message': 'Enter the root username:',
+                        }, {
+                            'type': 'password',
+                            'name': 'pwd',
+                            'message': 'Enter root password:',
+                        }, {
+                            'type': 'input',
+                            'name': 'uri',
+                            'message': 'Enter the Db connection url:',
+                        }, {
+                            'type': 'input',
+                            'name': 'instance',
+                            'message': 'Enter the Db instance name:',
+                        }, {
+                            'type': 'input',
+                            'name': 'dbname',
+                            'message': 'Enter the Db name:',
+                        }],
+                        DbTypes.SQLLITE.value: [{
+                            'type': 'input',
+                            'name': 'dbname',
+                            'message': 'Enter the Db name:',
+                        }]
+                    }[config_responses['DB']['type']]
+                    config_responses['DB'].update(prompt(db_questions))
+                from pprint import pprint
+                pprint(config_responses)
+                with open('config.yml', 'w') as config_file:
+                    yaml.dump(config_responses, config_file, default_flow_style=False)
+
+                # Create extra routes
+                custom_extra = AppFiles.custom if ProjectInitOptions.CUSTOM_ROUTES in responses['todo'] else ('', '')
+
                 with open('run.py', 'w') as f:
                     f.write(AppFiles.run % custom_extra)
 
@@ -88,7 +185,7 @@ class DbController(CommanlineController):
     callable_cls = True
     command = 'db'
 
-    def create(self):
+    def init(self):
         yes = prompt([
             {
                 'type': 'confirm',

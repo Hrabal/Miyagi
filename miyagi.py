@@ -35,11 +35,13 @@ class App:
     """
 
     def __init__(self, config: str=None, custom_pages: list=None, for_web: bool=False):
-        # Create the config object from the provided config file
-        self.config = Config(config)
 
         print()
-        print(Figlet(font='colossal').renderText('Miyagi'), f'App name: {self.config.project_name}')
+        print(Figlet(font='colossal').renderText('Miyagi'))
+
+        # Create the config object from the provided config file
+        self.config = Config(config)
+        print(f'App name: {self.config.project_name}')
 
         # Read the project processes
         self._read_processes()
@@ -74,7 +76,7 @@ class App:
 
     def _read_processes(self):
         """Traverses the "processes" folder and adds all the found valid processes to the Miyagi app"""
-        print('\nLoading installed processes...')
+        print('\nLoading default and installed processes...')
         self.processes = objdict()
         for module in chain(import_miyagi_modules(internal=True),
                             import_miyagi_modules('./processes')):

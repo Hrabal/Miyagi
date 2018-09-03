@@ -1,10 +1,16 @@
 import os
 import yaml
+from .tools import MiyagiEnum
 
 
-class DbTypes:
-    SQLLITE = 'Sqllite'
+class DbTypes(MiyagiEnum):
+    SQLLITE = 'sqlite'
     AWS = 'AWS'
+
+
+class DBEngines(MiyagiEnum):
+    POSTGRES = 'postgres'
+    MYSQL = 'mysql'
 
 
 class Config:
@@ -14,10 +20,17 @@ class Config:
     PROCESSES_PX = '/processes'
     OBJECTS_PX = '/objects'
 
+    from_file = False
+
     def __init__(self, file: str=None, obj: dict=None):
         if file:
-            with open(file) as f:
-                obj = yaml.load(f)
+            try:
+                with open(file) as f:
+                    obj = yaml.load(f)
+                    self.from_file = True
+            except FileNotFoundError:
+                print('WARNING!! No config file found! Using only defaults.')
+                obj = {}
         for k, v in obj.items():
             if isinstance(v, dict):
                 kls = type(k, (Config, ), v)
