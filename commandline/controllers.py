@@ -165,8 +165,6 @@ class InitController(CommanlineController):
                         }]
                     }[config_responses['DB']['type']]
                     config_responses['DB'].update(prompt(db_questions))
-                from pprint import pprint
-                pprint(config_responses)
                 with open('config.yml', 'w') as config_file:
                     yaml.dump(config_responses, config_file, default_flow_style=False)
 
