@@ -1,10 +1,12 @@
 # -*- coding: utf-8 -*-
 
 
-class MiyagiError(Exception): pass
+class MiyagiError(Exception):
+    pass
 
 
-class InitError(MiyagiError): pass
+class InitError(MiyagiError):
+    pass
 
 
 class MiyagiTypeError(InitError, TypeError):
@@ -15,4 +17,6 @@ class MiyagiTypeError(InitError, TypeError):
         super().__init__(*args, **kwargs)
 
     def __str__(self):
-        return f'\n\nInvalid object for parameter {self.par}: "{self.obj}".\nGot {self.obj.__class__} expected {self.expected or "<undefined>"}'
+        expected = self.expected or "<undefined>"
+        cls = self.obj.__class__
+        return f'\n\nInvalid object for parameter {self.par}: "{self.obj}".\nGot {cls} expected {expected}'
