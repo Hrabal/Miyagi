@@ -52,8 +52,8 @@ class Config:
     def db_uri(self):
         try:
             return {
-                DbTypes.AWS: f'{self.DB.engine}://{self.DB.user}:{self.DB.pwd}@{self.DB.uri}/{self.DB.dbname}',
-                DbTypes.SQLLITE: f'{self.DB.type}:///{self.project_name.lower()}.db'
+                DbTypes.AWS.value: f'{self.DB.engine}://{self.DB.user}:{self.DB.pwd}@{self.DB.uri}/{self.DB.dbname}',
+                DbTypes.SQLLITE.value: f'{self.DB.type}:///{self.project_name.lower()}.db'
             }.get(self.DB.type)
         except KeyError:
             raise Exception('No db configuration found')
