@@ -47,12 +47,17 @@ class App:
         self._read_processes()
 
         # Init the db
-        self.db = Db(self.config)
+        self.db = Db(self)
 
         # Registering extra/custom components
         self.custom_pages = custom_pages
         if for_web:
             self.init_webapp()
+
+    @property
+    def objects(self):
+        for _, proc in self.processes.items():
+            yield from proc.objects
 
     def init_webapp(self, custom_pages: list=None):
         # init the webapp
@@ -98,6 +103,7 @@ class MiyagiObject:
         self._gui = getattr(obj, '_gui', True)
         self._json_api = getattr(obj, '_json_api', False)
         self.parent = parent
+        self._original_cls = obj
 
         # inspect the class to find nested objects
         self._objects = {}
@@ -105,9 +111,6 @@ class MiyagiObject:
             if sub_obj != type:
                 sub_obj = MiyagiObject(sub_obj, parent=self)
                 self._objects[sub_obj.name] = sub_obj
-
-        # Make a SQLAlchemy model out of this class
-        self.cls = Db.craft_sqalchemy_model(obj, '_'.join(part.name.lower() for part in self.path))
 
     @property
     def objects(self):
