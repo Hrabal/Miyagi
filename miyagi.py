@@ -154,7 +154,7 @@ class MiyagiProcess:
         # Read all the object classes from this module
         for module, cls in [
             ('objects', MiyagiObject),
-            ]:
+        ]:
             self._read_element(module, cls)
 
     def _get_module_element(self, typ):
