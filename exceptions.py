@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Collection of errors handled and returned by Miyagi"""
 
 
 class MiyagiError(Exception):
@@ -20,3 +21,7 @@ class MiyagiTypeError(InitError, TypeError):
         expected = self.expected or "<undefined>"
         cls = self.obj.__class__
         return f'\n\nInvalid object for parameter {self.par}: "{self.obj}".\nGot {cls} expected {expected}'
+
+
+class MiyagiDbError(InitError):
+    pass

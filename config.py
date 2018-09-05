@@ -1,17 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
 from ruamel import yaml
-from .tools import MiyagiEnum
-
-
-class DbTypes(MiyagiEnum):
-    SQLLITE = 'sqlite'
-    AWS = 'AWS'
-
-
-class DBEngines(MiyagiEnum):
-    POSTGRES = 'postgres'
-    MYSQL = 'mysql'
 
 
 class Config:

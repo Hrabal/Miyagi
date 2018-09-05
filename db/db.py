@@ -3,10 +3,21 @@ from sqlalchemy.orm.session import sessionmaker
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column, Unicode, create_engine
 
+from ..exceptions import MiyagiDbError
 from ..objects import MiyagiObject
-from ..tools import objdict
+from ..tools import objdict, MiyagiEnum
 
 SQLAlchemyBase = declarative_base()
+
+
+class DbTypes(MiyagiEnum):
+    SQLLITE = 'sqlite'
+    AWS = 'AWS'
+
+
+class DBEngines(MiyagiEnum):
+    POSTGRES = 'postgres'
+    MYSQL = 'mysql'
 
 
 class Db:
@@ -18,7 +29,7 @@ class Db:
             # Check if we have valid db config
             self.app.config.DB is True
         except AttributeError:
-            print('WARNING!! No DB config found.')
+            raise MiyagiDbError('No DB config found. Please provide the needed parameters inside the "DB" key in the config file.')
         else:
             self.SQLAlchemyBase = SQLAlchemyBase
             self.db_engine = create_engine(self.db_uri, echo=True)
@@ -36,7 +47,7 @@ class Db:
         elif self.app.config.DB.type == DbTypes.SQLLITE.value:
             return f'{self.app.config.DB.type}:///{self.app.config.project_name.lower()}.db'
         else:
-            raise Exception('No db configuration found')
+            raise MiyagiDbError('No db configuration found')
 
     @property
     def db_repo(self):
