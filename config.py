@@ -2,12 +2,27 @@
 import os
 from ruamel import yaml
 
+from .tools import MiyagiEnum
+from .exceptions import MissingConfigError
+
+
+class DbTypes(MiyagiEnum):
+    SQLLITE = 'sqlite'
+    AWS = 'AWS'
+
+
+class DBEngines(MiyagiEnum):
+    POSTGRES = 'postgres'
+    MYSQL = 'mysql'
+
 
 class Config:
     """Miyagi Config object.
     Converts a yml or a dict into an object that can be accessed by attributes
     recursively.
-    All attributes are class attributes so they don't change between app/config instances."""
+    All attributes are class attributes so they don't change between app/config instances.
+
+    Provides also some calculated properties that aggregate config settings, i.e: db_uri."""
 
     # Miyagi constants, those can be overwritten in config.yml
     statics = [os.path.join(os.getcwd(), 'Miyagi', 'web', 'static'), ]  # if more statics are given those will be added to this list
@@ -24,11 +39,11 @@ class Config:
         if file:
             try:
                 with open(file) as f:
-                    obj = yaml.load(f)
+                    obj = yaml.safe_load(f)
                     self._from_file = True
             except FileNotFoundError:
-                print('WARNING!! No config file found! Using only defaults.')
-                obj = {}
+                raise MissingConfigError
+
         # Recursive Config creation.
         # Dicts in the imput are converted in child Config objects
         # 'statics' keys are added to the self.statics
@@ -42,6 +57,20 @@ class Config:
                 else:
                     setattr(self.__class__, k, v)
         self.project_name = os.getcwd().split('/')[-1]
+
+    @property
+    def db_uri(self):
+        """Generates a db connection uri or name based on the dbtype"""
+        if self.DB.type == DbTypes.AWS.value:
+            return f'{self.DB.engine}://{self.DB.user}:{self.DB.pwd}@{self.DB.uri}/{self.DB.dbname}'
+        elif self.DB.type == DbTypes.SQLLITE.value:
+            return f'{self.DB.type}:///{self.project_name.lower()}.db'
+        else:
+            raise MiyagiDbError('No db configuration found')
+
+    @property
+    def db_repo(self):
+        return f'{self.project_name.lower()}_db_repo'
 
     def __repr__(self):
         attr_repr = ', '.join(repr(v) if isinstance(v, Config)

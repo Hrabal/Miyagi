@@ -10,6 +10,10 @@ class InitError(MiyagiError):
     pass
 
 
+class MissingConfigError(InitError):
+    pass
+
+
 class MiyagiTypeError(InitError, TypeError):
     def __init__(self, *args, **kwargs):
         self.obj = kwargs.pop('obj', None)

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import inspect
 from sqlalchemy import Column, BigInteger, Integer
 
 
@@ -15,3 +16,8 @@ class BaseDbObject:
         for col in self.__class__.__table__.columns:
             if col.key != 'uid' or with_key:
                 yield col.key, self.__dict__.get(col.key, None)
+
+    @classmethod
+    def _system_cols(cls):
+        return set(k for k, o in inspect.getmembers(cls)
+                   if not inspect.isfunction(o) and not k.startswith('__'))
