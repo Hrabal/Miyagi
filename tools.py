@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+"""Collection of tools, and useful functions."""
 import os
 from enum import Enum
 from importlib import import_module
@@ -51,6 +52,7 @@ class objdict(dict):
 
 
 class MiyagiEnum(Enum):
+    """Builtin Enum with a handful api"""
     @classmethod
     def values(cls):
         return [v.value for v in cls]
