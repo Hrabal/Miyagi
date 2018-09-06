@@ -51,9 +51,7 @@ class App:
         self.db.digest_objects(self.objects)
 
         if for_web:
-            # Registering extra/custom components
-            self.custom_pages = custom_pages
-            self.init_webapp()
+            self.init_webapp(custom_pages=custom_pages)
 
     @property
     def objects(self):
@@ -63,10 +61,13 @@ class App:
     def init_webapp(self, custom_pages: list=None):
         # init the webapp
         self.webapp = WebApp(self)
+        if custom_pages:
+            self.add_blueprints(custom_pages)
 
+    def add_blueprints(self, blueprints: list):
         # Add extra Vibora blueprints
         # TODO: exception handling, and check that every blueprint is a valid Vibora Blueprint instance
-        blueprints = self.custom_pages or []
+        # Registering extra/custom components
         for blueprint in blueprints:
             if not isinstance(blueprint, Blueprint):
                 raise MiyagiTypeError(obj=blueprint, expected=Blueprint, par='custom_pages')
