@@ -2,7 +2,11 @@
 """Collection of tools, and useful functions."""
 import os
 from enum import Enum
+from pendulum import now
+from functools import partial
 from importlib import import_module
+
+utc_now = partial(now, 'UTC')
 
 
 def import_miyagi_modules(base_dir: str=None, internal: bool=False):

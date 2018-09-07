@@ -109,7 +109,7 @@ class ObjectAddPage(MiyagiBase):
                     Div(klass="col-10")(
                         Input(id=f'{self.obj.name}{k.title()}', klass="form-control", typ="text")()
                     )
-                ) for k, v in self.obj.cls().items()],
+                ) for k, v in self.obj.cls().items(system_attributes=False)],
                 Div(klass='form-group row')(Button(typ="submit", klass="btn btn-primary")('Save'))
             ))
         )
