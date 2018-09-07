@@ -101,7 +101,7 @@ class ObjectAddPage(MiyagiBase):
 
     def init(self):
         self.content(
-            Div(klass='container')(Form()(
+            Div(klass='container')(Form(action=f'{self.app.config.GUI_PX}{self.app.config.PROCESSES_PX}/{self.process.name}{self.app.config.OBJECTS_PX}/{self.obj.name.lower()}/add', method="POST")(
                 [Div(klass='form-group row')(
                     Label(klass='col-2 col-form-label', **{'for': f'{self.obj.name}{k.title()}'})(
                         k.title()
@@ -110,6 +110,8 @@ class ObjectAddPage(MiyagiBase):
                         Input(id=f'{self.obj.name}{k.title()}', klass="form-control", typ="text")()
                     )
                 ) for k, v in self.obj.cls().items(system_attributes=False)],
-                Div(klass='form-group row')(Button(typ="submit", klass="btn btn-primary")('Save'))
+                Div(klass='form-group row')(
+                    Button(typ="submit", klass="btn btn-primary")('Save')
+                )
             ))
         )

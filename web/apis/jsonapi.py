@@ -21,15 +21,23 @@ class JsonApi(MiyagiBlueprint):
         async def base_collection_blueprint(app: App):
             return JsonResponse({
                 "links": {
-                    "self": f"{self.app.webapp.url_scheme}://{self.app.config.host}/{uri}"
+                    "self": f"{app.webapp.vibora.url_scheme}://{app.config.host}{uri}"
                 },
                 "data": [{
                     "type": obj.name,
                     "id": resource.uid,
                     "attributes": {
                         k: v for k, v in resource.items() if not isinstance(v, TypedMany)
+                    },
+                    "relationships": {
+                        k: {
+                            "data": {
+                                "type": v.type,
+                                "id": v.rel_uid
+                            }
+                        } for k, v in resource.items() if isinstance(v, TypedMany)
                     }
-                } for resource in app.db.query(obj.cls).all()]
+                } for resource in app.db.session().query(obj.cls).all()] or None
             })
         base_collection_blueprint.__name__ = f'{obj.name.lower()}_collection'
         yield MiyagiRoute(f'{uri}', ['GET', ], base_collection_blueprint)

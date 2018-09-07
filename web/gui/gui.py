@@ -2,13 +2,11 @@
 from vibora.responses import Response
 
 from ...miyagi import App
-from ..web import MiyagiRoute
+from ..web import MiyagiRoute, MiyagiBlueprint
 from .templates.main_pages import MiyagiAppHome, ProcessesPage, ProcessPage, ObjectAddPage
 
 
-class Gui:
-    def __init__(self, app: App):
-        self.app = app
+class Gui(MiyagiBlueprint):
 
     @property
     def pages(self):
@@ -48,12 +46,13 @@ class Gui:
 
         # TODO: System endpoints and controllers
 
-    def page(self, template, uri, **kwargs):
+    def page(self, template, uri, methods=None, **kwargs):
         """Definition of a generic Vibora handler function.
         """
+
         async def generic_handler():
             """Generic Vibora/Miyagi handler:
              Instantiates the given template with kwargs, renders it and returns it"""
             return Response(template(self.app, **kwargs).render().encode())
-
-        return MiyagiRoute(uri, ['GET', ], generic_handler)
+        methods = methods or ['GET', ]
+        return MiyagiRoute(uri, methods, generic_handler)

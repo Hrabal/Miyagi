@@ -26,7 +26,7 @@ class Config:
 
     # Miyagi constants, those can be overwritten in config.yml
     statics = [os.path.join(os.getcwd(), 'Miyagi', 'web', 'static'), ]  # if more statics are given those will be added to this list
-    JSON_API_PX = '/jsnapi'  # base uri path of the jsonapi
+    JSON_API_PX = '/jsonapi'  # base uri path of the jsonapi
     GUI_PX = '/app'  # base uri path of the gui
     PROCESSES_PX = '/processes'  # path part of the processes in bot apis and gui
     OBJECTS_PX = '/objects'  # path part of the processe's objects in bot apis and gui
