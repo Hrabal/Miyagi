@@ -38,7 +38,7 @@ class App:
     def __init__(self, config: str=None, custom_pages: list=None, for_web: bool=False):
 
         print()
-        #print(Figlet(font='colossal').renderText('Miyagi'))
+        print(Figlet(font='colossal').renderText('Miyagi'))
 
         # Create the config object from the provided config file
         self.config = Config(config)
@@ -97,7 +97,6 @@ class App:
 
         self.processes = objdict()
         for kwargs in import_kargs:
-            path = kwargs.get('base_dir')
             print(f'\nLoading{" Miyagi internal " if "internal" in kwargs else " project "}processes...')
             # Call the import function with either the internal flag or the process directory
             for module in import_miyagi_modules(**kwargs):
@@ -114,7 +113,7 @@ class MiyagiObject:
     Reads the object and finds out all the Miyagi configurations in the provided class
     """
 
-    def __init__(self, obj, parent=None):
+    def __init__(self, obj: type, parent=None):
         self.name = obj.__name__
         self._gui = getattr(obj, '_gui', True)
         self._json_api = getattr(obj, '_json_api', False)

@@ -25,6 +25,8 @@ class MiyagiBase(TempyPage):
         return [Bootstrap4.css, FontAwesome.css, MainCSS.css]
 
     def init(self):
+        from pprint import pprint
+        pprint(self.__dict__)
         self.head(self.css())
         self.head(
             Meta(charset="utf-8"),

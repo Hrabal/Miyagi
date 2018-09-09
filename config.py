@@ -3,7 +3,7 @@ import os
 from ruamel import yaml
 
 from .tools import MiyagiEnum
-from .exceptions import MissingConfigError
+from .exceptions import MissingConfigError, MiyagiDbError
 
 
 class DbTypes(MiyagiEnum):
@@ -25,7 +25,8 @@ class Config:
     Provides also some calculated properties that aggregate config settings, i.e: db_uri."""
 
     # Miyagi constants, those can be overwritten in config.yml
-    statics = [os.path.join(os.getcwd(), 'Miyagi', 'web', 'static'), ]  # if more statics are given those will be added to this list
+    # if more statics are given those will be added to this list
+    statics = [os.path.join(os.getcwd(), 'Miyagi', 'web', 'static'), ]
     JSON_API_PX = '/jsonapi'  # base uri path of the jsonapi
     GUI_PX = '/app'  # base uri path of the gui
     PROCESSES_PX = '/processes'  # path part of the processes in bot apis and gui

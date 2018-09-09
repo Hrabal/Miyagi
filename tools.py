@@ -39,16 +39,16 @@ def import_miyagi_modules(base_dir: str=None, internal: bool=False):
 class objdict(dict):
     """dict with attribute access"""
 
-    def __getattr__(self, name):
+    def __getattr__(self, name: str):
         if name in self:
             return self[name]
         else:
             raise AttributeError("No such attribute: " + name)
 
-    def __setattr__(self, name, value):
+    def __setattr__(self, name: str, value):
         self[name] = value
 
-    def __delattr__(self, name):
+    def __delattr__(self, name: str):
         if name in self:
             del self[name]
         else:

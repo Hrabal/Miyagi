@@ -51,6 +51,6 @@ class WebApp:
             self._add_route(self.web, route)
         self.vibora.add_blueprint(self.web)
 
-    def _add_route(self, blueprint, route):
+    def _add_route(self, blueprint: Blueprint, route: MiyagiRoute):
         print(f'Adding route: {self.vibora.url_scheme}://{self.app.config.host}:{self.app.config.port}{route.uri}')
         blueprint.route(route.uri, methods=route.methods)(route.handler)

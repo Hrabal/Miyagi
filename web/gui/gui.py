@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from vibora.responses import Response
 
-from ...miyagi import App
 from ..web import MiyagiRoute, MiyagiBlueprint
 from .templates.main_pages import MiyagiAppHome, ProcessesPage, ProcessPage, ObjectAddPage
 

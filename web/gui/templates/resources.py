@@ -1,12 +1,15 @@
 # -*- coding: utf-8 -*-
+"""Collection of common resources rendered at boot time for optimization."""
 from tempy.tags import Link, Script
 
 
 class JQuery:
+    # JQuery from cdn
     js = Script(src="https://code.jquery.com/jquery-3.3.1.min.js")
 
 
 class Bootstrap4:
+    # Bootstrap js and css
     css = Link(rel="stylesheet",
                href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css",
                integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm",
@@ -17,6 +20,7 @@ class Bootstrap4:
 
 
 class FontAwesome:
+    # Font Awesome js and css
     css = Link(rel="stylesheet",
                href="https://use.fontawesome.com/releases/v5.2.0/css/all.css",
                integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ",
