@@ -80,7 +80,7 @@ class ProcessPage(MiyagiBase):
                 ),
                 [Tr()(
                     Td()(I(klass='fas fa-th-list')),
-                    Td()(A(href=f'{self.process_uri}{self.app.config.OBJECTS_PX}/{obj.name.lower()}/add')(
+                    Td()(A(href=f'{self.process_uri}{self.app.config.OBJECTS_PX}/{obj.name.lower()}/0')(
                         I(klass='fas fa-plus-square'))
                     ),
                     Td()(P()(obj.name.title()))
@@ -89,10 +89,11 @@ class ProcessPage(MiyagiBase):
         )
 
 
-class ObjectAddPage(MiyagiBase):
+class ObjectEditPage(MiyagiBase):
     def __init__(self, *args, **kwargs):
         self.process = kwargs.pop('process')
         self.obj = kwargs.pop('obj')
+        self.inst = kwargs.pop('inst')
         super().__init__(*args, **kwargs)
 
     @property
@@ -101,7 +102,7 @@ class ObjectAddPage(MiyagiBase):
 
     def init(self):
         self.content(
-            Div(klass='container')(Form(action=f'{self.app.config.GUI_PX}{self.app.config.PROCESSES_PX}/{self.process.name}{self.app.config.OBJECTS_PX}/{self.obj.name.lower()}/add', method="POST")(
+            Div(klass='container')(Form(action=f'{self.app.config.GUI_PX}{self.app.config.PROCESSES_PX}/{self.process.name}{self.app.config.OBJECTS_PX}/{self.obj.name.lower()}/{self.inst.uid or 0}', method="POST")(
                 [Div(klass='form-group row')(
                     Label(klass='col-2 col-form-label', **{'for': f'{self.obj.name}{k.title()}'})(
                         k.title()

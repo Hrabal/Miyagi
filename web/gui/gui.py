@@ -1,14 +1,18 @@
 # -*- coding: utf-8 -*-
 from vibora.responses import Response
+from vibora.request import Request
+from vibora.hooks import Events
+
+from tempy.widgets import TempyPage
 
 from ..web import MiyagiRoute, MiyagiBlueprint
-from .templates.main_pages import MiyagiAppHome, ProcessesPage, ProcessPage, ObjectAddPage
+from .templates.main_pages import MiyagiAppHome, ProcessesPage, ProcessPage, ObjectEditPage
 
 
 class Gui(MiyagiBlueprint):
 
     @property
-    def pages(self):
+    def endpoints(self):
         """Generator of all the GUI pages.
         Pages a MiyagiRoutes: containers of handler functions, methods and infos
         """
@@ -31,8 +35,10 @@ class Gui(MiyagiBlueprint):
 
                 # For every object in the process yields the object creation form
                 yield self.page(
-                    ObjectAddPage,
-                    f'{self.app.config.GUI_PX}{self.app.config.PROCESSES_PX}/{p_name}{self.app.config.OBJECTS_PX}/{obj.name.lower()}/add',
+                    ObjectEditPage,
+                    f'{self.app.config.GUI_PX}{self.app.config.PROCESSES_PX}/{p_name}{self.app.config.OBJECTS_PX}/{obj.name.lower()}/<uid>',
+                    handler='create_modify_object_handler',
+                    methods=['GET', 'POST'],
                     process=process,
                     obj=obj
                 )
@@ -45,13 +51,39 @@ class Gui(MiyagiBlueprint):
 
         # TODO: System endpoints and controllers
 
-    def page(self, template, uri, methods=None, **kwargs):
-        """Definition of a generic Vibora handler function.
+    def page(self, template: TempyPage,
+             uri: str,
+             handler: str='generic_handler',
+             methods: list=None,
+             **kwargs):
+        """Creates a MiyagiRoute with the given url and methods.
+        Here are stored handlers blueprints.
         """
-
         async def generic_handler():
             """Generic Vibora/Miyagi handler:
-             Instantiates the given template with kwargs, renders it and returns it"""
+            Instantiates the given template with kwargs, renders it and returns it"""
             return Response(template(self.app, **kwargs).render().encode())
+
+        async def create_modify_object_handler(request: Request, uid: int):
+            """Handler for forms:
+            Instantiates the given template with kwargs, renders it and returns it"""
+            obj = kwargs.get('obj')
+            if request.method == b'GET':
+                if uid:
+                    inst = obj.cls.get(uid)
+                else:
+                    inst = obj.cls()
+            elif request.method == b'POST':
+                if uid:
+                    inst = obj.cls.get(uid)
+                else:
+                    inst = obj.cls()
+                form = await request.form()
+                inst.set_dict(form)
+                inst.save()
+            kwargs['inst'] = inst
+            return Response(template(self.app, **kwargs).render().encode())
+
+        handler = self._copy_handler(locals().get(handler), kwargs)
         methods = methods or ['GET', ]
-        return MiyagiRoute(uri, methods, generic_handler)
+        return MiyagiRoute(uri, methods, handler)
