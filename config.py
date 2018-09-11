@@ -31,6 +31,7 @@ class Config:
     GUI_PX = '/app'  # base uri path of the gui
     PROCESSES_PX = '/processes'  # path part of the processes in bot apis and gui
     OBJECTS_PX = '/objects'  # path part of the processe's objects in bot apis and gui
+    debug = False
 
     _from_file = False
 
@@ -43,7 +44,7 @@ class Config:
                     obj = yaml.safe_load(f)
                     self._from_file = True
             except FileNotFoundError:
-                raise MissingConfigError
+                raise MissingConfigError(f'No config file found in project root: {file}')
 
         # Recursive Config creation.
         # Dicts in the imput are converted in child Config objects
