@@ -27,17 +27,21 @@ class Config:
     # Miyagi constants, those can be overwritten in config.yml
     # if more statics are given those will be added to this list
     statics = [os.path.join(os.getcwd(), 'Miyagi', 'web', 'static'), ]
+    debug = False
+    ES = False
+
+    # Paths constants
     JSON_API_PX = '/jsonapi'  # base uri path of the jsonapi
     GUI_PX = '/app'  # base uri path of the gui
     PROCESSES_PX = '/processes'  # path part of the processes in bot apis and gui
     OBJECTS_PX = '/objects'  # path part of the processe's objects in bot apis and gui
-    debug = False
 
     _from_file = False
 
     def __init__(self, file: str=None, obj: dict=None):
         """Make a config from either a file or a dict.
         The file (path relative to cwd()) have precedence."""
+        self._fields = set()
         if file:
             try:
                 with open(file) as f:
@@ -50,6 +54,7 @@ class Config:
         # Dicts in the imput are converted in child Config objects
         # 'statics' keys are added to the self.statics
         for k, v in obj.items():
+            self._fields.add(k)
             if isinstance(v, dict):
                 kls = type(k, (Config, ), v)
                 setattr(self.__class__, k, kls(obj=v))
@@ -59,6 +64,9 @@ class Config:
                 else:
                     setattr(self.__class__, k, v)
         self.project_name = os.getcwd().split('/')[-1]
+
+    def asdict(self):
+        return {k: getattr(self, k, None) for k in self._fields}
 
     @property
     def db_uri(self):

@@ -8,3 +8,4 @@ pyfiglet
 tem-py
 ruamel.yaml
 psycopg2-binary
+elasticsearch

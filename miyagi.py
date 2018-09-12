@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import inspect
+from elasticsearch import Elasticsearch
 from itertools import chain, zip_longest
 from pyfiglet import Figlet
 from types import ModuleType
@@ -53,6 +54,10 @@ class App:
 
         if for_web:
             self.init_webapp(custom_pages=custom_pages)
+
+        if self.config.ES:
+            self.es = Elasticsearch([self.config.ES.asdict(), ])
+
 
     @property
     def objects(self):
