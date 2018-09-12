@@ -5,10 +5,7 @@ from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm.session import sessionmaker
 from sqlalchemy import types as SQLtypes
 
-from pendulum import DateTime, Date, Time, Period
-from decimal import Decimal
-
-from .objects import BaseDbObject
+from .objects import BaseDbObject, TYP_MAP
 
 from ..config import Config
 from ..exceptions import MiyagiDbError
@@ -28,17 +25,7 @@ def transcode_type(typ):
     if issubclass(typ, BaseDbObject):
         # Objects classes transposed to object ids
         return SQLtypes.Integer
-    for p_type, sql_type in (
-        (int, SQLtypes.BigInteger),
-        (bool, SQLtypes.Boolean),
-        (Date, SQLtypes.Date),
-        (DateTime, SQLtypes.DateTime),
-        (float, SQLtypes.Float),
-        (Decimal, SQLtypes.Numeric),
-        (Period, SQLtypes.Interval),
-        (str, SQLtypes.Unicode),
-        (Time, SQLtypes.Time),
-    ):
+    for p_type, sql_type in TYP_MAP:
         if issubclass(typ, p_type):
             return sql_type
     # Fallback

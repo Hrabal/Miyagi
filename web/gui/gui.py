@@ -6,7 +6,7 @@ from vibora.hooks import Events
 from tempy.widgets import TempyPage
 
 from ..web import MiyagiRoute, MiyagiBlueprint
-from .templates.main_pages import MiyagiAppHome, ProcessesPage, ProcessPage, ObjectEditPage
+from .templates.main_pages import MiyagiAppHome, ProcessesPage, ProcessPage, ObjectPage, ObjectEditPage
 
 
 class Gui(MiyagiBlueprint):
@@ -16,27 +16,40 @@ class Gui(MiyagiBlueprint):
         """Generator of all the GUI pages.
         Pages a MiyagiRoutes: containers of handler functions, methods and infos
         """
+
         # Yields the home page
-        yield self.page(MiyagiAppHome, self.app.config.GUI_PX)
+        gui_uri = self.app.config.GUI_PX
+        yield self.page(MiyagiAppHome, gui_uri)
+
         # Yields the process list page
-        yield self.page(ProcessesPage, f'{self.app.config.GUI_PX}{self.app.config.PROCESSES_PX}')
+        processes_uri = f'{gui_uri}{self.app.config.PROCESSES_PX}'
+        yield self.page(ProcessesPage, processes_uri)
 
         for p_name, process in self.app.processes.items():
             # For every process yields the relative general page
+            process_uri = f'{processes_uri}/{p_name}'
             yield self.page(
                 ProcessPage,
-                f'{self.app.config.GUI_PX}{self.app.config.PROCESSES_PX}/{p_name}',
+                process_uri,
                 process=process
             )
             for obj in process.objects:
                 # For every object in the process yields the relative page
-                # TODO: object page
                 # List of instances + general object actions
+                object_uri = f'{process_uri}{self.app.config.OBJECTS_PX}/{obj.name.lower()}'
+                yield self.page(
+                    ObjectPage,
+                    object_uri,
+                    handler='generic_handler',
+                    methods=['GET', ],
+                    process=process,
+                    obj=obj
+                )
 
                 # For every object in the process yields the object creation form
                 yield self.page(
                     ObjectEditPage,
-                    f'{self.app.config.GUI_PX}{self.app.config.PROCESSES_PX}/{p_name}{self.app.config.OBJECTS_PX}/{obj.name.lower()}/<uid>',
+                    f'{object_uri}/<uid>',
                     handler='create_modify_object_handler',
                     methods=['GET', 'POST'],
                     process=process,
