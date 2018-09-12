@@ -68,19 +68,25 @@ class Gui(MiyagiBlueprint):
             """Handler for forms:
             Instantiates the given template with kwargs, renders it and returns it"""
             obj = kwargs.get('obj')
+            session = self.app.db.session()
             if request.method == b'GET':
                 if uid:
-                    inst = obj.cls.get(uid)
+                    inst = session.query(obj.cls).filter_by(uid=uid).first()
+                    if not inst:
+                        # TODO: raise
+                        inst = obj.cls()
                 else:
                     inst = obj.cls()
             elif request.method == b'POST':
                 if uid:
-                    inst = obj.cls.get(uid)
+                    inst = session.query(obj.cls).filter_by(uid=uid).first()
                 else:
                     inst = obj.cls()
                 form = await request.form()
-                inst.set_dict(form)
-                inst.save()
+                for k, v in form:
+                    setattr(inst, k, v)
+                session.add(inst)
+            session.commit()
             kwargs['inst'] = inst
             return Response(template(self.app, **kwargs).render().encode())
 
