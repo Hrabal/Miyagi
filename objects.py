@@ -23,7 +23,7 @@ class MiyagiObject(BaseDbObject):
 
     def set_dict(self, data_dict: dict):
         for k, v in data_dict:
-            if k int in BaseDbObject._system_cols():
+            if k in BaseDbObject._system_cols():
                 setattr(self, k, v)
 
 
