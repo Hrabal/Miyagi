@@ -4,16 +4,14 @@ from sqlalchemy import Column
 from sqlalchemy import types as SQLtypes
 
 import pendulum
-from pendulum import DateTime, Date, Time, Period
 from datetime import datetime
-from decimal import Decimal
+
 
 from ..web.session_manager import current_user
 from ..tools import utc_now
 
-PYT_TYPES = (int, bool, Date, DateTime, float, Decimal, Period, str, Time)
-ORM_TYPES = (SQLtypes.BigInteger, SQLtypes.Boolean, SQLtypes.Date, SQLtypes.DateTime, SQLtypes.Float, SQLtypes.Numeric, SQLtypes.Interval, SQLtypes.Unicode, SQLtypes.Time)
-TYP_MAP = zip(PYT_TYPES, ORM_TYPES)
+from .constants import CRUD
+from .elasticsearch import ElasticManager
 
 
 class BaseDbObject:
@@ -67,11 +65,14 @@ class BaseDbObject:
     def count(cls):
         return cls._db.session().query(cls).count()
 
+    @ElasticManager.update_es(CRUD.UPSERT)
     def save(self):
+        # Save to db
         s = self._db.session()
         s.add(self)
         s.commit()
 
+    @ElasticManager.update_es(CRUD.DELETE)
     def delete(self):
         s = self._db.session()
         s.delete(self)
@@ -79,5 +80,8 @@ class BaseDbObject:
 
     def set_dict(self, data_dict: dict):
         for k, v in data_dict:
+            print(k)
             if k not in BaseDbObject._system_cols():
+                print('oh')
+                print(v)
                 setattr(self, k, v)

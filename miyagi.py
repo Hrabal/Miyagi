@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 import inspect
-from elasticsearch import Elasticsearch
-from itertools import chain, zip_longest
+from itertools import zip_longest
 from pyfiglet import Figlet
 from types import ModuleType
 
@@ -9,7 +8,7 @@ from vibora.blueprints import Blueprint
 
 # Miyagi imports
 from .config import Config
-from .db import Db
+from .db import Db, ElasticManager
 from .web import WebApp
 from .tools import objdict
 from .tools import import_miyagi_modules
@@ -48,7 +47,7 @@ class App:
         # Read the project processes
         self._read_processes()
         # Init the db
-        self.db = Db(self.config)
+        self.db = Db(self)
         # Bind the Db instance to this app's processes and make the SQLAlchemy models
         self.db.digest_objects(self.objects)
 
@@ -56,8 +55,7 @@ class App:
             self.init_webapp(custom_pages=custom_pages)
 
         if self.config.ES:
-            self.es = Elasticsearch([self.config.ES.asdict(), ])
-
+            self.es = ElasticManager(self)
 
     @property
     def objects(self):

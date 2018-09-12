@@ -1,13 +1,12 @@
 # -*- coding: utf-8 -*-
-import inspect
-from sqlalchemy import Column, Unicode, create_engine
+from sqlalchemy import Column, create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm.session import sessionmaker
 from sqlalchemy import types as SQLtypes
 
-from .objects import BaseDbObject, TYP_MAP
+from .objects import BaseDbObject
+from .constants import TYP_MAP
 
-from ..config import Config
 from ..exceptions import MiyagiDbError
 from ..tools import objdict, MiyagiEnum
 
@@ -35,8 +34,9 @@ def transcode_type(typ):
 class Db:
     models = objdict()
 
-    def __init__(self, config: Config):
-        self.config = config
+    def __init__(self, app):
+        self.app = app
+        self.config = app.config
         try:
             # Check if we have valid db config
             self.config.DB.type is True
@@ -69,7 +69,7 @@ class Db:
             {
                 **{'__tablename__': '_'.join(part.name.lower()
                                              for part in obj.path)},
-                **{'_db': self},  # For db-accessing apis on the Objects
+                **{'_db': self, '_app': self.app},  # For db-accessing apis on the Objects
                 **{k: Column(transcode_type(typ))
                    for k, typ in obj._original_cls.__annotations__.items()
                    if k not in BaseDbObject._system_cols()  # those are inherited
