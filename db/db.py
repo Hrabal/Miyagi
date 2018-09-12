@@ -12,7 +12,6 @@ from .objects import BaseDbObject
 
 from ..config import Config
 from ..exceptions import MiyagiDbError
-from ..objects import MiyagiObject
 from ..tools import objdict, MiyagiEnum
 
 SQLAlchemyBase = declarative_base()
@@ -26,7 +25,7 @@ def transcode_type(typ):
     if issubclass(typ, MiyagiEnum):
         # Custom defined enumes
         return SQLtypes.Enum(typ)
-    if issubclass(typ, MiyagiObject):
+    if issubclass(typ, BaseDbObject):
         # Objects classes transposed to object ids
         return SQLtypes.Integer
     for p_type, sql_type in (
@@ -66,7 +65,7 @@ class Db:
         for obj in objects:
             # Make a SQLAlchemy model out of this class
             # and register the model in the Db instance
-            # and in the MiyagiObject instance
+            # and in the BaseDbObject instance
             self.models[obj.name] = obj.cls = self.craft_sqalchemy_model(obj)
 
     def session(self):
@@ -79,7 +78,7 @@ class Db:
     def craft_sqalchemy_model(self, obj):
         return type(
             obj.name,
-            (MiyagiObject, self.SQLAlchemyBase),
+            (BaseDbObject, self.SQLAlchemyBase),
             {
                 **{'__tablename__': '_'.join(part.name.lower()
                                              for part in obj.path)},
