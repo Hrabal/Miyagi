@@ -18,6 +18,7 @@ class BaseDbObject:
     """Base class for every Miyagi model.
     Provides an autoincrement pk and few useful api.
     """
+    _indexed = ('uid', )
     uid = Column(SQLtypes.Integer,
                  primary_key=True,
                  autoincrement=True)
@@ -31,6 +32,9 @@ class BaseDbObject:
     update_user = Column(SQLtypes.BigInteger,
                          onupdate=current_user,
                          default=current_user)
+
+    def __repr__(self):
+        return f'<{self.__class__.__name__} uid: {self.uid}>'
 
     def items(self, sys_attrs=True):
         """Emulates dict's items() on the SQLAlchemy model."""
@@ -48,10 +52,7 @@ class BaseDbObject:
     @classmethod
     def _system_cols(cls):
         return set(k for k, o in inspect.getmembers(cls)
-                   if not inspect.isfunction(o) and not k.startswith('__'))
-
-    def __repr__(self):
-        return f'<{self.__class__.__name__} uid: {self.uid}>'
+                   if not inspect.isfunction(o) and not k.startswith('__') and not k == '_indexed')
 
     @classmethod
     def query(cls, *org, **kwargs):
@@ -64,6 +65,10 @@ class BaseDbObject:
     @classmethod
     def count(cls):
         return cls._db.session().query(cls).count()
+
+    @property
+    def searchable_values(self):
+        return ':'.join(getattr(self, k, '') for k in self._indexed)
 
     @ElasticManager.update_es(CRUD.UPSERT)
     def save(self):
@@ -80,8 +85,5 @@ class BaseDbObject:
 
     def set_dict(self, data_dict: dict):
         for k, v in data_dict:
-            print(k)
             if k not in BaseDbObject._system_cols():
-                print('oh')
-                print(v)
                 setattr(self, k, v)

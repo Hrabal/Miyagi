@@ -41,7 +41,8 @@ class Db:
             # Check if we have valid db config
             self.config.DB.type is True
         except AttributeError:
-            raise MiyagiDbError('No DB config found. Please provide the needed parameters inside the "DB" key in the config file.')
+            raise MiyagiDbError('No DB config found.'
+                                'Please provide the needed parameters inside the "DB" key in the config file.')
 
         self.SQLAlchemyBase = SQLAlchemyBase
         self.db_engine = create_engine(self.config.db_uri, echo=True)
@@ -65,14 +66,17 @@ class Db:
     def craft_sqalchemy_model(self, obj):
         return type(
             obj.name,
-            (BaseDbObject, self.SQLAlchemyBase),
+            (BaseDbObject, self.SQLAlchemyBase, ),
             {
-                **{'__tablename__': '_'.join(part.name.lower()
-                                             for part in obj.path)},
-                **{'_db': self, '_app': self.app},  # For db-accessing apis on the Objects
+                **{
+                    '__tablename__': '_'.join(part.name.lower() for part in obj.path),
+                    '_db': self,  # For db-accessing apis on the Objects
+                    '_app': self.app,  # For app/app components access
+                    '_indexed': BaseDbObject._indexed + getattr(obj._original_cls, '_indexed', tuple()),
+                },
                 **{k: Column(transcode_type(typ))
                    for k, typ in obj._original_cls.__annotations__.items()
                    if k not in BaseDbObject._system_cols()  # those are inherited
-                   },
+                   }
             }
         )
