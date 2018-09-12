@@ -35,6 +35,8 @@ if __name__ == '__main__':
     try:
         args.func()
     except AttributeError:
+        import traceback
+        print(traceback.format_exc())
         print(f'{CRED}ERROR! Wrong command invocation, plese read the help:{CEND}')
         print(f'{CRED}Base usage:{CEND}')
         parser.print_help()

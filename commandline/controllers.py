@@ -194,15 +194,15 @@ class DbController(CommanlineController):
         ])
         if yes['yes']:
             self.app.db.SQLAlchemyBase.metadata.create_all(self.app.db.db_engine)
-            repo_path = os.path.join(os.getcwd(), self.app.db.db_repo)
+            repo_path = os.path.join(os.getcwd(), self.app.config.db_repo)
             try:
                 if not os.path.exists(repo_path):
-                    api.create(self.app.db.db_repo, 'database repository')
-                    api.version_control(self.app.config.db_uri, self.app.db.db_repo)
+                    api.create(self.app.config.db_repo, 'database repository')
+                    api.version_control(self.app.config.db_uri, self.app.config.db_repo)
                 else:
                     api.version_control(self.app.config.db_uri,
                                         self.app.db.db_repo,
-                                        api.version(self.app.db.db_repo))
+                                        api.version(self.app.config.db_repo))
             except DatabaseAlreadyControlledError:
                 print(f'{CRED}ERROR!{CEND} Your database appear to be already initializated on version control.')
                 print(f'Please check your db versioning tables and the db repository folder: {repo_path}')
@@ -211,8 +211,8 @@ class DbController(CommanlineController):
 
     def upgrade(self):
         try:
-            api.upgrade(self.app.config.db_uri, self.app.db.db_repo)
-            v = api.db_version(self.app.config.db_uri, self.app.db.db_repo)
+            api.upgrade(self.app.config.db_uri, self.app.config.db_repo)
+            v = api.db_version(self.app.config.db_uri, self.app.config.db_repo)
         except:
             print(f'{CRED}ERROR!{CEND} Unable to upgrade the database schema.')
             print(traceback.format_exc())
@@ -222,18 +222,18 @@ class DbController(CommanlineController):
     def migrate(self):
         try:
             import imp
-            v = api.db_version(self.app.config.db_uri, self.app.db.db_repo)
-            migration = f'{self.app.db.db_repo}/versions/{v+1:02}_migration.py'
+            v = api.db_version(self.app.config.db_uri, self.app.config.db_repo)
+            migration = f'{self.app.config.db_repo}/versions/{v+1:02}_migration.py'
             tmp_module = imp.new_module('old_model')
-            old_model = api.create_model(self.app.config.db_uri, self.app.db.db_repo)
+            old_model = api.create_model(self.app.config.db_uri, self.app.config.db_repo)
             exec(old_model, tmp_module.__dict__)
             script = api.make_update_script_for_model(self.app.config.db_uri,
-                                                      self.app.db.db_repo,
+                                                      self.app.config.db_repo,
                                                       tmp_module.meta,
                                                       self.app.db.metadata)
             open(migration, "wt").write(script)
-            api.upgrade(self.app.config.db_uri, self.app.db.db_repo)
-            v = api.db_version(self.app.config.db_uri, self.app.db.db_repo)
+            api.upgrade(self.app.config.db_uri, self.app.config.db_repo)
+            v = api.db_version(self.app.config.db_uri, self.app.config.db_repo)
         except:
             print(f'{CRED}ERROR!{CEND} Unable to migrate the database schema.')
             print(traceback.format_exc())
@@ -243,9 +243,9 @@ class DbController(CommanlineController):
 
     def downgrade(self):
         try:
-            v = api.db_version(self.app.config.db_uri, self.app.db.db_repo)
-            api.downgrade(self.app.config.db_uri, self.app.db.db_repo, v - 1)
-            v = api.db_version(self.app.config.db_uri, self.app.db.db_repo)
+            v = api.db_version(self.app.config.db_uri, self.app.config.db_repo)
+            api.downgrade(self.app.config.db_uri, self.app.config.db_repo, v - 1)
+            v = api.db_version(self.app.config.db_uri, self.app.config.db_repo)
         except:
             print(f'{CRED}ERROR!{CEND} Unable to downgrade the database schema.')
             print(traceback.format_exc())
