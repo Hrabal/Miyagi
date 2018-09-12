@@ -74,19 +74,17 @@ class Gui(MiyagiBlueprint):
                     inst = session.query(obj.cls).filter_by(uid=uid).first()
                     if not inst:
                         # TODO: raise
-                        inst = obj.cls()
+                        inst = obj.cls.new()
                 else:
-                    inst = obj.cls()
+                    inst = obj.cls.new()
             elif request.method == b'POST':
                 if uid:
                     inst = session.query(obj.cls).filter_by(uid=uid).first()
                 else:
-                    inst = obj.cls()
+                    inst = obj.cls.new()
                 form = await request.form()
-                for k, v in form:
-                    setattr(inst, k, v)
-                session.add(inst)
-            session.commit()
+                inst.set_dict(form)
+                inst.save()
             kwargs['inst'] = inst
             return Response(template(self.app, **kwargs).render().encode())
 
