@@ -70,20 +70,20 @@ class BaseDbObject:
     def searchable_values(self):
         return ':'.join(getattr(self, k, '') for k in self._indexed)
 
-    @ElasticManager.update_es(CRUD.UPSERT)
+    @ElasticManager.mark_es(CRUD.UPSERT)
     def save(self):
         # Save to db
         s = self._db.session()
         s.add(self)
         s.commit()
 
-    @ElasticManager.update_es(CRUD.DELETE)
+    @ElasticManager.mark_es(CRUD.DELETE)
     def delete(self):
         s = self._db.session()
         s.delete(self)
         s.commit()
 
     def set_dict(self, data_dict: dict):
-        for k, v in data_dict:
+        for k, v in data_dict.items():
             if k not in BaseDbObject._system_cols():
                 setattr(self, k, v)

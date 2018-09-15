@@ -46,16 +46,18 @@ class App:
 
         # Read the project processes
         self._read_processes()
+
         # Init the db
         self.db = Db(self)
         # Bind the Db instance to this app's processes and make the SQLAlchemy models
         self.db.digest_objects(self.objects)
 
+        # Let's make it elastic
+        if self.config.ES and False:
+            self.es = ElasticManager(self)
+
         if for_web:
             self.init_webapp(custom_pages=custom_pages)
-
-        if self.config.ES:
-            self.es = ElasticManager(self)
 
     @property
     def objects(self):
