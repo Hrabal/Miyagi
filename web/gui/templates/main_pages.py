@@ -129,7 +129,9 @@ class ObjectEditPage(MiyagiBase):
 
     def init(self):
         self.content(
-            Div(klass='container')(Form(action=f'{self.app.config.GUI_PX}{self.app.config.PROCESSES_PX}/{self.process.name}{self.app.config.OBJECTS_PX}/{self.obj.name.lower()}/{self.inst.uid or 0}', method="POST")(
+            Div(klass='container')(Form(action=f'{self.app.config.GUI_PX}{self.app.config.PROCESSES_PX}/{self.process.name}{self.app.config.OBJECTS_PX}/{self.obj.name.lower()}/{self.inst.uid or 0}',
+                                        method="POST",
+                                        enctype="multipart/form-data")(
                 [Div(klass='form-group row')(
                     Label(klass='col-2 col-form-label', **{'for': f'{self.obj.name}{k.title()}'})(
                         k.title()

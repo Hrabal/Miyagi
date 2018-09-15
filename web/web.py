@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
-from inspect import signature
 from types import FunctionType
-from typing import get_type_hints
 
 from vibora import Vibora
 from vibora.blueprints import Blueprint

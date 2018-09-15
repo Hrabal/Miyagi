@@ -4,7 +4,7 @@ from tempy.tags import Meta, Title, Nav, Div, A, Input, Ul, Li, Span, I, H6, H1,
 
 from ....miyagi import App
 
-from .resources import Bootstrap4, FontAwesome, JQuery, MainCSS, Popper
+from .resources import Bootstrap4, FontAwesome, JQuery, Popper, MiyagiCSS, MiyagiJS
 
 
 class MiyagiBase(TempyPage):
@@ -19,10 +19,10 @@ class MiyagiBase(TempyPage):
         return ''
 
     def js(self):
-        return [JQuery.js, Popper.js, Bootstrap4.js, ]
+        return [JQuery.js, Popper.js, Bootstrap4.js, MiyagiJS.common, ]
 
     def css(self):
-        return [Bootstrap4.css, FontAwesome.css, MainCSS.css]
+        return [Bootstrap4.css, FontAwesome.css, MiyagiCSS.main, ]
 
     def init(self):
         self.head(self.css())

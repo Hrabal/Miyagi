@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 from vibora.responses import Response
 from vibora.request import Request
-from vibora.hooks import Events
 
 from tempy.widgets import TempyPage
 
